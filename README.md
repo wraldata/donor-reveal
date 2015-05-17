@@ -4,7 +4,7 @@ Donor-reveal is code that allows users to instantly reveal who donated to any cu
 
 By hovering over a lawmaker's name, a pop-up will show basic information, as well as donation totals and the lawmaker's top five contributors.
 
-The WRAL version was inspired by the [Greenhouse Chrome extension](http://allaregreen.us/], created by Nicholas Rubin, to track money in Congress.
+The WRAL version was inspired by the [Greenhouse Chrome extension](http://allaregreen.us/), created by Nicholas Rubin, to track money in Congress.
 
 See an example here:
 
