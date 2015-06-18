@@ -3,21 +3,21 @@
  mentioned in a story filed in @NCCapitol.
  It uses data from the National Institute on Money in State Politics
  Created by Tyler Dukes and Alex Phillips
- Last updated 5.28.15, 10:40 a.m.
+ Last updated 6.18.15, 10:08 a.m.
  */
 require([
     'jquery',
     'lodash',
     'jquery-ui'
 ], function ($, _) {
-
+ 
     //Global variables
     var ncga_members = "not run";
     var ftm_data;
     var ftm_total;
     var pol_data = {};
     var opened_tooltip;
-
+ 
     //Load members of the NCGA
     var ncga_members = (function () {
         $.ajax({
@@ -32,7 +32,7 @@ require([
         });
         return ncga_members;
     })();
-
+ 
     //Query the FollowTheMoney.com API
     function getDonations(eid, wral_id) {
         $.ajax({
@@ -69,7 +69,7 @@ require([
             }
         });
     }
-
+ 
     //define tooltip structure and pass in variables
     function ncgaBox(name, party, district, img, position, wral_id) {
         return '<div class="donor-box">' +
@@ -91,21 +91,25 @@ require([
             'Data as of ' + pol_data[wral_id][2] + '</p>' +
             '</div>';
     }
-
+ 
     //For clicking/tapping to close
     $('.donor-box').click(function () {
         $(".donor-reveal").tooltip('close');
     });
-
+ 
     //Script to find lawmakers and initialize distinct tooltips
     function highlightText() {
         //Make a list of lawmakers from the loaded JSON, then search for them
         for (var i = 0; i < ncga_members.length; i++) {
             $.each($(".story-text").children(), function() {
+                if (!$(this).is('p')) {
+                    return;
+                }
+ 
                 /*
                 Regex will prevent matching variable that is between HTML tags
                 RegExp Breakdown:
-
+ 
                  (              # Open capture group
                     variable    # Match variable text
                  )              # End capture group
@@ -116,7 +120,6 @@ require([
                     [^<>]*      # Any number of non-'<' and non-'>' characters
                     <\/         # The characters < and /, with forward slash escaped
                  )              # End negative lookahead.
-
                  */
                 var regex = new RegExp("(" + ncga_members[i]["member"] + ")(?![^<]*>|[^<>]*<\/)");
                 replaceMarkup (
@@ -124,9 +127,10 @@ require([
                     regex,
                     '<button id="' + i + '" class="donor-reveal">' + ncga_members[i]["member"] + '</button>'
                 );
-
+ 
                 //and check for alternates, but only if the alt_spelling column isn't blank
                 if (ncga_members[i]["alt_spelling"] != "") {
+                    regex = new RegExp("(" + ncga_members[i]["alt_spelling"] + ")(?![^<]*>|[^<>]*<\/)");
                     replaceMarkup(
                         $(this),
                         regex,
@@ -135,18 +139,18 @@ require([
                 }
             });
         }
-
+ 
         function replaceMarkup($element, regex, markup) {
             $element.html($element.html().replace(regex, markup));
         }
-
+ 
         //On successful highlight, grab all IDs with class donor-reveal and get JSON data
         $.each($('.donor-reveal'), function () {
             //initialize with a loading spinner
             pol_data[this.id] = ["", '<tr><td colspan="2" style="line-height:31px;"><img src="http://wwwcache.wral.com/presentation/v3/images/widgets/wait_popup/spinner.gif" style="width:31px;" />Loading...</td></tr>', ""];
             getDonations(ncga_members[this.id]["eid"], this.id)
         });
-
+ 
         //add tooltip
         $(".donor-reveal").tooltip({
             items: "button",
